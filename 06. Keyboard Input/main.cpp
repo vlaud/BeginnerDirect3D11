@@ -398,7 +398,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
         // Cycle player color
         float4 playerColor = {};
         const float colorCyclePeriod = 5.f; //in seconds
-        const float colorCycleFreq = 2 * M_PI / colorCyclePeriod;
+        const float colorCycleFreq = 2 * (float)M_PI / colorCyclePeriod;
         playerColor.x = 0.5f * (sinf(colorCycleFreq * (float)currentTimeInSeconds) + 1);
         playerColor.y = 1 - playerColor.x;
         playerColor.z = 0.f;

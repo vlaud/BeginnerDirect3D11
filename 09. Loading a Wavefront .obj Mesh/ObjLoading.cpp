@@ -313,8 +313,8 @@ LoadedObj loadObj(const char* filename)
     free(vnBuffer);
     free(fileBytes);
 
-    result.numVertices = vertexBufferSize;
-    result.numIndices = indexBufferSize;
+    result.numVertices = (uint32_t)vertexBufferSize;
+    result.numIndices = (uint32_t)indexBufferSize;
     result.vertexBuffer = outVertexBuffer;
     result.indexBuffer = outIndexBuffer;
 

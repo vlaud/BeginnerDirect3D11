@@ -355,13 +355,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
         float2 playerPos = {};
         const float posCycleAmplitude = 0.5f;
         const float posCyclePeriod = 3.f; // in seconds
-        const float posCycleFreq = 2 * M_PI / posCyclePeriod;
+        const float posCycleFreq = 2 * (float)M_PI / posCyclePeriod;
         playerPos.y = posCycleAmplitude * sinf(posCycleFreq * (float)currentTimeInSeconds);
 
         // Cycle player color
         float4 playerColor = {};
         const float colorCyclePeriod = 5.f; //in seconds
-        const float colorCycleFreq = 2 * M_PI / colorCyclePeriod;
+        const float colorCycleFreq = 2 * (float)M_PI / colorCyclePeriod;
         playerColor.x = 0.5f * (sinf(colorCycleFreq * (float)currentTimeInSeconds) + 1);
         playerColor.y = 1 - playerColor.x;
         playerColor.z = 0.f;

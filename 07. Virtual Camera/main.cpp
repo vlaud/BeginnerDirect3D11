@@ -497,7 +497,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
             if(global_keyIsDown[GameActionLowerCam])
                 cameraPos.y -= CAM_MOVE_AMOUNT;
             
-            const float CAM_TURN_SPEED = M_PI; // in radians per second
+            const float CAM_TURN_SPEED = (float)M_PI; // in radians per second
             const float CAM_TURN_AMOUNT = CAM_TURN_SPEED * dt;
             if(global_keyIsDown[GameActionTurnCamLeft])
                 cameraYaw += CAM_TURN_AMOUNT;
@@ -509,10 +509,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
                 cameraPitch -= CAM_TURN_AMOUNT;
 
             // Wrap yaw to avoid floating-point errors if we turn too far
-            while(cameraYaw >= 2*M_PI) 
-                cameraYaw -= 2*M_PI;
-            while(cameraYaw <= -2*M_PI) 
-                cameraYaw += 2*M_PI;
+            while(cameraYaw >= 2*(float)M_PI)
+                cameraYaw -= 2*(float)M_PI;
+            while(cameraYaw <= -2*(float)M_PI)
+                cameraYaw += 2*(float)M_PI;
 
             // Clamp pitch to stop camera flipping upside down
             if(cameraPitch > degreesToRadians(85)) 
