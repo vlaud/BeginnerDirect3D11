@@ -11,7 +11,7 @@ REM call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" 
 REM call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
 REM call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
 
-set COMMON_COMPILER_FLAGS=/nologo /EHa- /GR- /Oi /W4 /Fm
+set COMMON_COMPILER_FLAGS=/nologo /EHa- /GR- /Oi /W4 /Fm /DUNICODE /DWIN32_LEAN_AND_MEAN /DNOMINMAX
 
 set DEBUG_FLAGS=/DDEBUG_BUILD /Od /MTd /Zi 
 set RELEASE_FLAGS =/O2

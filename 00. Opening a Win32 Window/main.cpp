@@ -1,6 +1,3 @@
-#define WIN32_LEAN_AND_MEAN
-#define NOMINMAX
-#define UNICODE
 #include <windows.h>
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
