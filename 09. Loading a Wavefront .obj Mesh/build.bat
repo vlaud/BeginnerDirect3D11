@@ -1,6 +1,6 @@
 @echo off
 
-set COMMON_COMPILER_FLAGS=/nologo /EHa- /GR- /fp:fast /Oi /W4 /Fm
+set COMMON_COMPILER_FLAGS=/nologo /EHa- /GR- /Oi /W4 /Fm
 
 set DEBUG_FLAGS=/DDEBUG_BUILD /Od /MTd /Zi
 set RELEASE_FLAGS =/O2
