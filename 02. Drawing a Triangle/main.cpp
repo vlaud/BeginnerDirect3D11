@@ -107,7 +107,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
         baseDeviceContext->Release();
     }
 
-#ifdef DEBUG_BUILD
+#ifdef _DEBUG
     // Set up debug layer to break on D3D11 errors
     ID3D11Debug *d3dDebug = nullptr;
     d3d11Device->QueryInterface(__uuidof(ID3D11Debug), (void**)&d3dDebug);
