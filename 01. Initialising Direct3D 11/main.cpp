@@ -32,7 +32,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpCmdLine*/, int /*nShowCmd*/)
 {
     // Open a window
-    HWND hwnd;
+    HWND hwnd = nullptr;
     {
         WNDCLASSEXW winClass = {};
         winClass.cbSize = sizeof(WNDCLASSEXW);
@@ -70,11 +70,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
     }
     
     // Create D3D11 Device and Context
-    ID3D11Device1* d3d11Device;
-    ID3D11DeviceContext1* d3d11DeviceContext;
+    ID3D11Device1* d3d11Device = nullptr;
+    ID3D11DeviceContext1* d3d11DeviceContext = nullptr;
     {
-        ID3D11Device* baseDevice;
-        ID3D11DeviceContext* baseDeviceContext;
+        ID3D11Device* baseDevice = nullptr;
+        ID3D11DeviceContext* baseDeviceContext = nullptr;
         D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL_11_0 };
         UINT creationFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
         #if defined(DEBUG_BUILD)
@@ -119,21 +119,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
 #endif
 
     // Create Swap Chain
-    IDXGISwapChain1* d3d11SwapChain;
+    IDXGISwapChain1* d3d11SwapChain = nullptr;
     { 
         // Get DXGI Factory (needed to create Swap Chain)
-        IDXGIFactory2* dxgiFactory;
+        IDXGIFactory2* dxgiFactory = nullptr;
         {
-            IDXGIDevice1* dxgiDevice;
+            IDXGIDevice1* dxgiDevice = nullptr;
             HRESULT hResult = d3d11Device->QueryInterface(__uuidof(IDXGIDevice1), (void**)&dxgiDevice);
             assert(SUCCEEDED(hResult));
 
-            IDXGIAdapter* dxgiAdapter;
+            IDXGIAdapter* dxgiAdapter = nullptr;
             hResult = dxgiDevice->GetAdapter(&dxgiAdapter);
             assert(SUCCEEDED(hResult));
             dxgiDevice->Release();
 
-            DXGI_ADAPTER_DESC adapterDesc;
+            DXGI_ADAPTER_DESC adapterDesc = {};
             dxgiAdapter->GetDesc(&adapterDesc);
 
             OutputDebugStringA("Graphics Device: ");
@@ -164,9 +164,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
     }
 
     // Create Framebuffer Render Target
-    ID3D11RenderTargetView* d3d11FrameBufferView;
+    ID3D11RenderTargetView* d3d11FrameBufferView = nullptr;
     {
-        ID3D11Texture2D* d3d11FrameBuffer;
+        ID3D11Texture2D* d3d11FrameBuffer = nullptr;
         HRESULT hResult = d3d11SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&d3d11FrameBuffer);
         assert(SUCCEEDED(hResult));
 

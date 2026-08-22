@@ -36,14 +36,14 @@ static bool global_keyIsDown[GameActionCount] = {};
 
 bool win32CreateD3D11RenderTargets(ID3D11Device1* d3d11Device, IDXGISwapChain1* swapChain, ID3D11RenderTargetView** d3d11FrameBufferView, ID3D11DepthStencilView** depthBufferView)
 {
-    ID3D11Texture2D* d3d11FrameBuffer;
+    ID3D11Texture2D* d3d11FrameBuffer = nullptr;
     HRESULT hResult = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&d3d11FrameBuffer);
     assert(SUCCEEDED(hResult));
 
     hResult = d3d11Device->CreateRenderTargetView(d3d11FrameBuffer, 0, d3d11FrameBufferView);
     assert(SUCCEEDED(hResult));
 
-    D3D11_TEXTURE2D_DESC depthBufferDesc;
+    D3D11_TEXTURE2D_DESC depthBufferDesc = {};
     d3d11FrameBuffer->GetDesc(&depthBufferDesc);
 
     d3d11FrameBuffer->Release();
@@ -51,7 +51,7 @@ bool win32CreateD3D11RenderTargets(ID3D11Device1* d3d11Device, IDXGISwapChain1* 
     depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
     depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 
-    ID3D11Texture2D* depthBuffer;
+    ID3D11Texture2D* depthBuffer = nullptr;
     d3d11Device->CreateTexture2D(&depthBufferDesc, nullptr, &depthBuffer);
 
     d3d11Device->CreateDepthStencilView(depthBuffer, nullptr, depthBufferView);
@@ -113,7 +113,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpCmdLine*/, int /*nShowCmd*/)
 {
     // Open a window
-    HWND hwnd;
+    HWND hwnd = nullptr;
     {
         WNDCLASSEXW winClass = {};
         winClass.cbSize = sizeof(WNDCLASSEXW);
@@ -151,11 +151,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
     }
 
     // Create D3D11 Device and Context
-    ID3D11Device1* d3d11Device;
-    ID3D11DeviceContext1* d3d11DeviceContext;
+    ID3D11Device1* d3d11Device = nullptr;
+    ID3D11DeviceContext1* d3d11DeviceContext = nullptr;
     {
-        ID3D11Device* baseDevice;
-        ID3D11DeviceContext* baseDeviceContext;
+        ID3D11Device* baseDevice = nullptr;
+        ID3D11DeviceContext* baseDeviceContext = nullptr;
         D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL_11_0 };
         UINT creationFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
         #if defined(DEBUG_BUILD)
@@ -200,21 +200,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
 #endif
 
     // Create Swap Chain
-    IDXGISwapChain1* d3d11SwapChain;
+    IDXGISwapChain1* d3d11SwapChain = nullptr;
     {
         // Get DXGI Factory (needed to create Swap Chain)
-        IDXGIFactory2* dxgiFactory;
+        IDXGIFactory2* dxgiFactory = nullptr;
         {
-            IDXGIDevice1* dxgiDevice;
+            IDXGIDevice1* dxgiDevice = nullptr;
             HRESULT hResult = d3d11Device->QueryInterface(__uuidof(IDXGIDevice1), (void**)&dxgiDevice);
             assert(SUCCEEDED(hResult));
 
-            IDXGIAdapter* dxgiAdapter;
+            IDXGIAdapter* dxgiAdapter = nullptr;
             hResult = dxgiDevice->GetAdapter(&dxgiAdapter);
             assert(SUCCEEDED(hResult));
             dxgiDevice->Release();
 
-            DXGI_ADAPTER_DESC adapterDesc;
+            DXGI_ADAPTER_DESC adapterDesc = {};
             dxgiAdapter->GetDesc(&adapterDesc);
 
             OutputDebugStringA("Graphics Device: ");
@@ -245,8 +245,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
     }
 
     // Create Render Target and Depth Buffer
-    ID3D11RenderTargetView* d3d11FrameBufferView;
-    ID3D11DepthStencilView* depthBufferView;
+    ID3D11RenderTargetView* d3d11FrameBufferView = nullptr;
+    ID3D11DepthStencilView* depthBufferView = nullptr;
     win32CreateD3D11RenderTargets(d3d11Device, d3d11SwapChain, &d3d11FrameBufferView, &depthBufferView);
 
     UINT shaderCompileFlags = 0;
@@ -256,14 +256,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
     #endif
 
     // Create Vertex Shader
-    ID3DBlob* vsBlob;
-    ID3D11VertexShader* vertexShader;
+    ID3DBlob* vsBlob = nullptr;
+    ID3D11VertexShader* vertexShader = nullptr;
     {
-        ID3DBlob* shaderCompileErrorsBlob;
+        ID3DBlob* shaderCompileErrorsBlob = nullptr;
         HRESULT hResult = D3DCompileFromFile(L"shaders.hlsl", nullptr, nullptr, "vs_main", "vs_5_0", shaderCompileFlags, 0, &vsBlob, &shaderCompileErrorsBlob);
         if(FAILED(hResult))
         {
-            const char* errorString = NULL;
+            const char* errorString = nullptr;
             if(hResult == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))
                 errorString = "Could not compile shader; file not found";
             else if(shaderCompileErrorsBlob){
@@ -279,14 +279,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
     }
 
     // Create Pixel Shader
-    ID3D11PixelShader* pixelShader;
+    ID3D11PixelShader* pixelShader = nullptr;
     {
-        ID3DBlob* psBlob;
-        ID3DBlob* shaderCompileErrorsBlob;
+        ID3DBlob* psBlob = nullptr;
+        ID3DBlob* shaderCompileErrorsBlob = nullptr;
         HRESULT hResult = D3DCompileFromFile(L"shaders.hlsl", nullptr, nullptr, "ps_main", "ps_5_0", shaderCompileFlags, 0, &psBlob, &shaderCompileErrorsBlob);
         if(FAILED(hResult))
         {
-            const char* errorString = NULL;
+            const char* errorString = nullptr;
             if(hResult == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))
                 errorString = "Could not compile shader; file not found";
             else if(shaderCompileErrorsBlob){
@@ -303,7 +303,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
     }
 
     // Create Input Layout
-    ID3D11InputLayout* inputLayout;
+    ID3D11InputLayout* inputLayout = nullptr;
     {
         D3D11_INPUT_ELEMENT_DESC inputElementDesc[] =
         {
@@ -317,12 +317,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
     }
 
     // Create Vertex and Index Buffer
-    ID3D11Buffer* vertexBuffer;
-    ID3D11Buffer* indexBuffer;
-    // UINT numVerts;
-    UINT numIndices;
-    UINT stride;
-    UINT offset;
+    ID3D11Buffer* vertexBuffer = nullptr;
+    ID3D11Buffer* indexBuffer = nullptr;
+    // UINT numVerts = 0;
+    UINT numIndices = 0;
+    UINT stride = 0;
+    UINT offset = 0;
     {
         LoadedObj obj = loadObj("cube.obj");
         stride = sizeof(VertexData);
@@ -353,7 +353,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
     }
 
     // Create Sampler State
-    ID3D11SamplerState* samplerState;
+    ID3D11SamplerState* samplerState = nullptr;
     {
         D3D11_SAMPLER_DESC samplerDesc = {};
         samplerDesc.Filter         = D3D11_FILTER_MIN_MAG_MIP_POINT;
@@ -370,7 +370,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
     }
     
     // Load Image
-    int texWidth, texHeight, texNumChannels;
+    int texWidth = 0;
+    int texHeight = 0;
+    int texNumChannels = 0;
     int texForceNumChannels = 4;
     unsigned char* testTextureBytes = stbi_load("test.png", &texWidth, &texHeight,
                                                 &texNumChannels, texForceNumChannels);
@@ -378,7 +380,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
     int texBytesPerRow = 4 * texWidth;
 
     // Create Texture
-    ID3D11ShaderResourceView* textureView;
+    ID3D11ShaderResourceView* textureView = nullptr;
     {
         D3D11_TEXTURE2D_DESC textureDesc = {};
         textureDesc.Width              = texWidth;
@@ -394,7 +396,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
         textureSubresourceData.pSysMem = testTextureBytes;
         textureSubresourceData.SysMemPitch = texBytesPerRow;
 
-        ID3D11Texture2D* texture;
+        ID3D11Texture2D* texture = nullptr;
         d3d11Device->CreateTexture2D(&textureDesc, &textureSubresourceData, &texture);
 
         d3d11Device->CreateShaderResourceView(texture, nullptr, &textureView);
@@ -409,7 +411,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
         float4x4 modelViewProj;
     };
 
-    ID3D11Buffer* constantBuffer;
+    ID3D11Buffer* constantBuffer = nullptr;
     {
         D3D11_BUFFER_DESC constantBufferDesc = {};
         // ByteWidth must be a multiple of 16, per the docs
@@ -422,7 +424,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
         assert(SUCCEEDED(hResult));
     }
 
-    ID3D11RasterizerState* rasterizerState;
+    ID3D11RasterizerState* rasterizerState = nullptr;
     {
         D3D11_RASTERIZER_DESC rasterizerDesc = {};
         rasterizerDesc.FillMode = D3D11_FILL_SOLID;
@@ -432,7 +434,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
         d3d11Device->CreateRasterizerState(&rasterizerDesc, &rasterizerState);
     }
 
-    ID3D11DepthStencilState* depthStencilState;
+    ID3D11DepthStencilState* depthStencilState = nullptr;
     {
         D3D11_DEPTH_STENCIL_DESC depthStencilDesc = {};
         depthStencilDesc.DepthEnable    = TRUE;
@@ -455,10 +457,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
     LONGLONG startPerfCount = 0;
     LONGLONG perfCounterFrequency = 0;
     {
-        LARGE_INTEGER perfCount;
+        LARGE_INTEGER perfCount = {};
         QueryPerformanceCounter(&perfCount);
         startPerfCount = perfCount.QuadPart;
-        LARGE_INTEGER perfFreq;
+        LARGE_INTEGER perfFreq = {};
         QueryPerformanceFrequency(&perfFreq);
         perfCounterFrequency = perfFreq.QuadPart;
     }
@@ -468,10 +470,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
     bool isRunning = true;
     while(isRunning)
     {
-        float dt;
+        float dt = 0.f;
         {
             double previousTimeInSeconds = currentTimeInSeconds;
-            LARGE_INTEGER perfCount;
+            LARGE_INTEGER perfCount = {};
             QueryPerformanceCounter(&perfCount);
 
             currentTimeInSeconds = (double)(perfCount.QuadPart - startPerfCount) / (double)perfCounterFrequency;
@@ -490,10 +492,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
         }
 
         // Get window dimensions
-        int windowWidth, windowHeight;
-        float windowAspectRatio;
+        int windowWidth = 0;
+        int windowHeight = 0;
+        float windowAspectRatio = 0;
         {
-            RECT clientRect;
+            RECT clientRect = {};
             GetClientRect(hwnd, &clientRect);
             windowWidth = clientRect.right - clientRect.left;
             windowHeight = clientRect.bottom - clientRect.top;
@@ -577,7 +580,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
         float4x4 modelViewProj = modelMat * viewMat * perspectiveMat;
 
         // Update constant buffer
-        D3D11_MAPPED_SUBRESOURCE mappedSubresource;
+        D3D11_MAPPED_SUBRESOURCE mappedSubresource = {};
         d3d11DeviceContext->Map(constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
         Constants* constants = (Constants*)(mappedSubresource.pData);
         constants->modelViewProj = modelViewProj;

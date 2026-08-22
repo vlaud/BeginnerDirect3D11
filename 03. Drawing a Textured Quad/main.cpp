@@ -44,7 +44,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpCmdLine*/, int /*nShowCmd*/)
 {
     // Open a window
-    HWND hwnd;
+    HWND hwnd = nullptr;
     {
         WNDCLASSEXW winClass = {};
         winClass.cbSize = sizeof(WNDCLASSEXW);
@@ -82,11 +82,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
     }
 
     // Create D3D11 Device and Context
-    ID3D11Device1* d3d11Device;
-    ID3D11DeviceContext1* d3d11DeviceContext;
+    ID3D11Device1* d3d11Device = nullptr;
+    ID3D11DeviceContext1* d3d11DeviceContext = nullptr;
     {
-        ID3D11Device* baseDevice;
-        ID3D11DeviceContext* baseDeviceContext;
+        ID3D11Device* baseDevice = nullptr;
+        ID3D11DeviceContext* baseDeviceContext = nullptr;
         D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL_11_0 };
         UINT creationFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
         #if defined(DEBUG_BUILD)
@@ -131,21 +131,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
 #endif
     
     // Create Swap Chain
-    IDXGISwapChain1* d3d11SwapChain;
+    IDXGISwapChain1* d3d11SwapChain = nullptr;
     {
         // Get DXGI Factory (needed to create Swap Chain)
-        IDXGIFactory2* dxgiFactory;
+        IDXGIFactory2* dxgiFactory = nullptr;
         {
-            IDXGIDevice1* dxgiDevice;
+            IDXGIDevice1* dxgiDevice = nullptr;
             HRESULT hResult = d3d11Device->QueryInterface(__uuidof(IDXGIDevice1), (void**)&dxgiDevice);
             assert(SUCCEEDED(hResult));
 
-            IDXGIAdapter* dxgiAdapter;
+            IDXGIAdapter* dxgiAdapter = nullptr;
             hResult = dxgiDevice->GetAdapter(&dxgiAdapter);
             assert(SUCCEEDED(hResult));
             dxgiDevice->Release();
 
-            DXGI_ADAPTER_DESC adapterDesc;
+            DXGI_ADAPTER_DESC adapterDesc = {};
             dxgiAdapter->GetDesc(&adapterDesc);
 
             OutputDebugStringA("Graphics Device: ");
@@ -176,9 +176,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
     }
 
     // Create Framebuffer Render Target
-    ID3D11RenderTargetView* d3d11FrameBufferView;
+    ID3D11RenderTargetView* d3d11FrameBufferView = nullptr;
     {
-        ID3D11Texture2D* d3d11FrameBuffer;
+        ID3D11Texture2D* d3d11FrameBuffer = nullptr;
         HRESULT hResult = d3d11SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&d3d11FrameBuffer);
         assert(SUCCEEDED(hResult));
 
@@ -188,14 +188,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
     }
 
    // Create Vertex Shader
-    ID3DBlob* vsBlob;
-    ID3D11VertexShader* vertexShader;
+    ID3DBlob* vsBlob = nullptr;
+    ID3D11VertexShader* vertexShader = nullptr;
     {
-        ID3DBlob* shaderCompileErrorsBlob;
+        ID3DBlob* shaderCompileErrorsBlob = nullptr;
         HRESULT hResult = D3DCompileFromFile(L"shaders.hlsl", nullptr, nullptr, "vs_main", "vs_5_0", 0, 0, &vsBlob, &shaderCompileErrorsBlob);
         if(FAILED(hResult))
         {
-            const char* errorString = NULL;
+            const char* errorString = nullptr;
             if(hResult == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))
                 errorString = "Could not compile shader; file not found";
             else if(shaderCompileErrorsBlob){
@@ -211,14 +211,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
     }
 
     // Create Pixel Shader
-    ID3D11PixelShader* pixelShader;
+    ID3D11PixelShader* pixelShader = nullptr;
     {
-        ID3DBlob* psBlob;
-        ID3DBlob* shaderCompileErrorsBlob;
+        ID3DBlob* psBlob = nullptr;
+        ID3DBlob* shaderCompileErrorsBlob = nullptr;
         HRESULT hResult = D3DCompileFromFile(L"shaders.hlsl", nullptr, nullptr, "ps_main", "ps_5_0", 0, 0, &psBlob, &shaderCompileErrorsBlob);
         if(FAILED(hResult))
         {
-            const char* errorString = NULL;
+            const char* errorString = nullptr;
             if(hResult == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))
                 errorString = "Could not compile shader; file not found";
             else if(shaderCompileErrorsBlob){
@@ -235,7 +235,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
     }
 
     // Create Input Layout
-    ID3D11InputLayout* inputLayout;
+    ID3D11InputLayout* inputLayout = nullptr;
     {
         D3D11_INPUT_ELEMENT_DESC inputElementDesc[] =
         {
@@ -249,10 +249,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
     }
 
     // Create Vertex Buffer
-    ID3D11Buffer* vertexBuffer;
-    UINT numVerts;
-    UINT stride;
-    UINT offset;
+    ID3D11Buffer* vertexBuffer = nullptr;
+    UINT numVerts = 0;
+    UINT stride = 0;
+    UINT offset = 0;
     {
         float vertexData[] = { // x, y, u, v
             -0.5f,  0.5f, 0.f, 0.f,
@@ -289,11 +289,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
     samplerDesc.BorderColor[3] = 1.0f;
     samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 
-    ID3D11SamplerState* samplerState;
+    ID3D11SamplerState* samplerState = nullptr;
     d3d11Device->CreateSamplerState(&samplerDesc, &samplerState);
 
     // Load Image
-    int texWidth, texHeight, texNumChannels;
+    int texWidth = 0;
+    int texHeight = 0;
+    int texNumChannels = 0;
     int texForceNumChannels = 4;
     unsigned char* testTextureBytes = stbi_load("testTexture.png", &texWidth, &texHeight,
                                                 &texNumChannels, texForceNumChannels);
@@ -315,10 +317,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
     textureSubresourceData.pSysMem = testTextureBytes;
     textureSubresourceData.SysMemPitch = texBytesPerRow;
 
-    ID3D11Texture2D* texture;
+    ID3D11Texture2D* texture = nullptr;
     d3d11Device->CreateTexture2D(&textureDesc, &textureSubresourceData, &texture);
 
-    ID3D11ShaderResourceView* textureView;
+    ID3D11ShaderResourceView* textureView = nullptr;
     d3d11Device->CreateShaderResourceView(texture, nullptr, &textureView);
 
     free(testTextureBytes);
@@ -344,7 +346,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
             HRESULT res = d3d11SwapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
             assert(SUCCEEDED(res));
             
-            ID3D11Texture2D* d3d11FrameBuffer;
+            ID3D11Texture2D* d3d11FrameBuffer = nullptr;
             res = d3d11SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&d3d11FrameBuffer);
             assert(SUCCEEDED(res));
 
@@ -359,7 +361,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
         FLOAT backgroundColor[4] = { 0.1f, 0.2f, 0.6f, 1.0f };
         d3d11DeviceContext->ClearRenderTargetView(d3d11FrameBufferView, backgroundColor);
 
-        RECT winRect;
+        RECT winRect = {};
         GetClientRect(hwnd, &winRect);
         D3D11_VIEWPORT viewport = { 0.0f, 0.0f, (FLOAT)(winRect.right - winRect.left), (FLOAT)(winRect.bottom - winRect.top), 0.0f, 1.0f };
         d3d11DeviceContext->RSSetViewports(1, &viewport);
