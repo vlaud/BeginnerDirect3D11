@@ -1,4 +1,6 @@
 @echo off
+setlocal
+cd "%~dp0"
 
 REM Note: You need to initialise your shell to call the MSVC command-line compiler
 REM Either call vcvarsall.bat (should be in a location listed below for whatever version) or

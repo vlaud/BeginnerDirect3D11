@@ -1,4 +1,6 @@
 @echo off
+setlocal
+cd "%~dp0"
 
 set COMMON_COMPILER_FLAGS=/nologo /EHa- /GR- /Oi /W4 /Fm /DUNICODE /DWIN32_LEAN_AND_MEAN /DNOMINMAX
 
