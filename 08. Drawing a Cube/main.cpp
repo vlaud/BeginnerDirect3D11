@@ -151,7 +151,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
         ID3D11DeviceContext* baseDeviceContext = nullptr;
         D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL_11_0 };
         UINT creationFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
-        #if defined(DEBUG_BUILD)
+        #ifdef _DEBUG
         creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
         #endif
 
@@ -244,7 +244,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
 
     UINT shaderCompileFlags = 0;
     // Compiling with this flag allows debugging shaders with Visual Studio
-    #if defined(DEBUG_BUILD)
+    #ifdef _DEBUG
     shaderCompileFlags |= D3DCOMPILE_DEBUG;
     #endif
 
