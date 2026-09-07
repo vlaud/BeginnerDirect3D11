@@ -76,8 +76,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
     }
 
     // Create D3D11 Device and Context
+
+    // 장치: GPU 관련
     ID3D11Device1* d3d11Device = nullptr;
-    ID3D11DeviceContext1* d3d11DeviceContext = nullptr;
+
+    // 장치 흐름: 렌더링 파이프 라인
+    ID3D11DeviceContext1* d3d11RenderingPipeline = nullptr;
     {
         ID3D11Device* baseDevice = nullptr;
         ID3D11DeviceContext* baseDeviceContext = nullptr;
@@ -87,6 +91,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
         creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
         #endif
 
+        // 윈도우에서 함수의 성공, 실패를 나타내는 데이터 자료형
         HRESULT hResult = D3D11CreateDevice(0, D3D_DRIVER_TYPE_HARDWARE, 
                                             0, creationFlags, 
                                             featureLevels, ARRAYSIZE(featureLevels), 
@@ -102,7 +107,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
         assert(SUCCEEDED(hResult));
         baseDevice->Release();
 
-        hResult = baseDeviceContext->QueryInterface(__uuidof(ID3D11DeviceContext1), (void**)&d3d11DeviceContext);
+        hResult = baseDeviceContext->QueryInterface(__uuidof(ID3D11DeviceContext1), (void**)&d3d11RenderingPipeline);
         assert(SUCCEEDED(hResult));
         baseDeviceContext->Release();
     }
@@ -124,7 +129,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
     }
 #endif
 
-    // Create Swap Chain
+    // 스왑 체인 (화면 깜빡임 방지 용 버퍼) 생성
     IDXGISwapChain1* d3d11SwapChain = nullptr;
     {
         // Get DXGI Factory (needed to create Swap Chain)
@@ -150,6 +155,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
             dxgiAdapter->Release();
         }
         
+        // 스왑 체인 설정 구조체
         DXGI_SWAP_CHAIN_DESC1 d3d11SwapChainDesc = {};
         d3d11SwapChainDesc.Width = 0; // use window width
         d3d11SwapChainDesc.Height = 0; // use window height
@@ -170,6 +176,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
     }
     
     // Create Framebuffer Render Target
+    // 렌더 타겟: 임시 버퍼
     ID3D11RenderTargetView* d3d11FrameBufferView = nullptr;
     {
         ID3D11Texture2D* d3d11FrameBuffer = nullptr;
@@ -183,6 +190,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
 
     // Create Vertex Shader
     ID3DBlob* vsBlob = nullptr;
+
+    // 정점 셰이더
     ID3D11VertexShader* vertexShader = nullptr;
     {
         ID3DBlob* shaderCompileErrorsBlob = nullptr;
@@ -205,6 +214,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
     }
 
     // Create Pixel Shader
+    // 픽셀 셰이더 (Fragment Shader)
     ID3D11PixelShader* pixelShader = nullptr;
     {
         ID3DBlob* psBlob = nullptr;
@@ -229,6 +239,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
     }
 
     // Create Input Layout
+    // 인풋 레이아웃
     ID3D11InputLayout* inputLayout = nullptr;
     {
         D3D11_INPUT_ELEMENT_DESC inputElementDesc[] =
@@ -243,18 +254,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
     }
 
     // Create Vertex Buffer
+    // 정점 버퍼
     ID3D11Buffer* vertexBuffer = nullptr;
-    UINT numVerts = 0;
+    UINT numVerts = 0; // 정점 개수
     UINT stride = 0;
     UINT offset = 0;
     {
+        // 각 정점의 데이터 (삼각형)
         float vertexData[] = { // x, y, r, g, b, a
             0.0f,  0.5f, 0.f, 1.f, 0.f, 1.f,
             0.5f, -0.5f, 1.f, 0.f, 0.f, 1.f,
             -0.5f, -0.5f, 0.f, 0.f, 1.f, 1.f
         };
-        stride = 6 * sizeof(float);
-        numVerts = sizeof(vertexData) / stride;
+        stride = 6 * sizeof(float); // 1개의 정점 당 6개의 데이터 개수 6개
+        numVerts = sizeof(vertexData) / stride; // 정점 개수 = 정점 데이터 배열 사이즈 / 각 정점 당 데이터 개수
         offset = 0;
 
         D3D11_BUFFER_DESC vertexBufferDesc = {};
@@ -262,6 +275,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
         vertexBufferDesc.Usage     = D3D11_USAGE_IMMUTABLE;
         vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
+        // 정점 데이터를 GPU로 전달
         D3D11_SUBRESOURCE_DATA vertexSubresourceData = { vertexData };
 
         HRESULT hResult = d3d11Device->CreateBuffer(&vertexBufferDesc, &vertexSubresourceData, &vertexBuffer);
@@ -283,7 +297,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
 
         if(global_windowDidResize)
         {
-            d3d11DeviceContext->OMSetRenderTargets(0, 0, 0);
+            d3d11RenderingPipeline->OMSetRenderTargets(0, 0, 0);
             d3d11FrameBufferView->Release();
 
             HRESULT res = d3d11SwapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
@@ -293,6 +307,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
             res = d3d11SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&d3d11FrameBuffer);
             assert(SUCCEEDED(res));
 
+            // 렌더 타겟 뷰 생성
             res = d3d11Device->CreateRenderTargetView(d3d11FrameBuffer, NULL,
                                                      &d3d11FrameBufferView);
             assert(SUCCEEDED(res));
@@ -301,26 +316,42 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
             global_windowDidResize = false;
         }
 
+        // 배경색 설정
         FLOAT backgroundColor[4] = { 0.1f, 0.2f, 0.6f, 1.0f };
-        d3d11DeviceContext->ClearRenderTargetView(d3d11FrameBufferView, backgroundColor);
+
+        // 렌더 타겟 뷰 지우기
+        d3d11RenderingPipeline->ClearRenderTargetView(d3d11FrameBufferView, backgroundColor);
 
         RECT winRect = {};
         GetClientRect(hwnd, &winRect);
+
+        // 뷰포트 설정
         D3D11_VIEWPORT viewport = { 0.0f, 0.0f, (FLOAT)(winRect.right - winRect.left), (FLOAT)(winRect.bottom - winRect.top), 0.0f, 1.0f };
-        d3d11DeviceContext->RSSetViewports(1, &viewport);
-
-        d3d11DeviceContext->OMSetRenderTargets(1, &d3d11FrameBufferView, nullptr);
-
-        d3d11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-        d3d11DeviceContext->IASetInputLayout(inputLayout);
-
-        d3d11DeviceContext->VSSetShader(vertexShader, nullptr, 0);
-        d3d11DeviceContext->PSSetShader(pixelShader, nullptr, 0);
-
-        d3d11DeviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
-
-        d3d11DeviceContext->Draw(numVerts, 0);
         
+        // 래스터라이저 뷰포트 설정
+        d3d11RenderingPipeline->RSSetViewports(1, &viewport);
+
+        // 아웃풋 머저 렌더 타겟 설정
+        d3d11RenderingPipeline->OMSetRenderTargets(1, &d3d11FrameBufferView, nullptr);
+
+        // 인풋 어셈블러 단계
+        d3d11RenderingPipeline->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+        // 인풋 어셈블러에 인풋 레이아웃 설정
+        d3d11RenderingPipeline->IASetInputLayout(inputLayout); 
+
+        // 버텍스 셰이더 설정
+        d3d11RenderingPipeline->VSSetShader(vertexShader, nullptr, 0);
+
+        // 픽셀 셰이더 설정
+        d3d11RenderingPipeline->PSSetShader(pixelShader, nullptr, 0);
+
+        // 인풋 어셈블러에 버텍스 버퍼 연결
+        d3d11RenderingPipeline->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
+
+        // 그리기
+        d3d11RenderingPipeline->Draw(numVerts, 0);
+        
+        // 화면 교체
         d3d11SwapChain->Present(1, 0);
     }
 
