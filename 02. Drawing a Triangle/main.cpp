@@ -339,13 +339,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
         // 인풋 어셈블러에 인풋 레이아웃 설정
         d3d11RenderingPipeline->IASetInputLayout(inputLayout); 
 
-        // 버텍스 셰이더 설정
+        // 정점 셰이더 설정
         d3d11RenderingPipeline->VSSetShader(vertexShader, nullptr, 0);
 
         // 픽셀 셰이더 설정
         d3d11RenderingPipeline->PSSetShader(pixelShader, nullptr, 0);
 
-        // 인풋 어셈블러에 버텍스 버퍼 연결
+        // 인풋 어셈블러에 정점 버퍼 연결
         d3d11RenderingPipeline->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
 
         // 그리기
