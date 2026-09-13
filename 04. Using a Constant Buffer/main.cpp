@@ -10,6 +10,7 @@
 
 static bool global_windowDidResize = false;
 
+float2 pos = { 0.25f, 0.3f };
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
     LRESULT result = 0;
@@ -19,6 +20,24 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
         {
             if(wparam == VK_ESCAPE)
                 DestroyWindow(hwnd);
+
+            if (wparam == 'W')
+            {
+                pos.y += 0.01f;
+            }
+            if (wparam == 'A')
+            {
+                pos.x -= 0.01f;
+            }
+            if (wparam == 'S')
+            {
+                pos.y -= 0.01f;
+            }
+            if (wparam == 'D')
+            {
+                pos.x += 0.01f;
+            }
+
             break;
         }
         case WM_DESTROY:
@@ -329,7 +348,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
         D3D11_MAPPED_SUBRESOURCE mappedSubresource = {};
         d3d11DeviceContext->Map(constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
         Constants* constants = (Constants*)(mappedSubresource.pData);
-        constants->pos = {0.25f, 0.3f};
+        constants->pos = pos;
         constants->color = {0.7f, 0.65f, 0.1f, 1.f};
         d3d11DeviceContext->Unmap(constantBuffer, 0);
 

@@ -252,12 +252,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
     UINT offset = 0;
     {
         float vertexData[] = { // x, y, u, v
-            -0.5f,  0.5f, 0.f, 0.f,
-            0.5f, -0.5f, 1.f, 1.f,
-            -0.5f, -0.5f, 0.f, 1.f,
-            -0.5f,  0.5f, 0.f, 0.f,
-            0.5f,  0.5f, 1.f, 0.f,
-            0.5f, -0.5f, 1.f, 1.f
+            -0.5f,  0.5f, 0.f, 0.f, // uv 0,0에 x,y -0.5, 0.5
+            0.5f, -0.5f, 1.f, 1.f, // uv 1,1에 x,y 0.5, -0.5
+            -0.5f, -0.5f, 0.f, 1.f, // uv 0,1에 x,y -0.5, -0.5
+
+            -0.5f,  0.5f, 0.f, 0.f, // uv 0,0에 x,y -0.5, 0.5
+            0.5f,  0.5f, 1.f, 0.f, // uv 1,0에 x,y 0.5, 0.5
+            0.5f, -0.5f, 1.f, 1.f // uv 1,1에 x,y 0.5, -0.5
         };
         stride = 4 * sizeof(float);
         numVerts = sizeof(vertexData) / stride;
