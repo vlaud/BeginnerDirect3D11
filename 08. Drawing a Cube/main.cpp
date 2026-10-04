@@ -407,10 +407,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
     }
 
     // Camera
-    float3 cameraPos = {0, 0, 2};
-    float3 cameraFwd = {0, 0, -1};
-    float cameraPitch = 0.f;
-    float cameraYaw = 0.f;
+    float3 cameraPos = {0, 0, 2}; // 카메라 좌표
+    float3 cameraFwd = {0, 0, -1}; // 카메라 앞 벡터
+    float cameraPitch = 0.f; // 카메라 x축 기울기
+    float cameraYaw = 0.f; // 카메라 y축 기울기
 
     float4x4 perspectiveMat = {};
     global_windowDidResize = true; // To force initial perspectiveMat calculation
@@ -529,22 +529,29 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
         // float4x4 viewMat = inverse(rotateXMat(cameraPitch) * rotateYMat(cameraYaw) * translationMat(cameraPos));
         // NOTE: We can simplify this calculation to avoid inverse()!
         // Applying the rule inverse(A*B) = inverse(B) * inverse(A) gives:
-        // float4x4 viewMat = inverse(translationMat(cameraPos)) * inverse(rotateYMat(cameraYaw)) * inverse(rotateXMat(cameraPitch));
+        // float4x4 viewMat = inverse(translationMat(cameraPos)) * inverse(rotateYMat( b)) * inverse(rotateXMat(cameraPitch));
         // The inverse of a rotation/translation is a negated rotation/translation:
+
+        // 카메라 매트릭스
         float4x4 viewMat = translationMat(-cameraPos) * rotateYMat(-cameraYaw) * rotateXMat(-cameraPitch);
         // Update the forward vector we use for camera movement:
+        // 카메라 시점 벡터(앞)
         cameraFwd = {-viewMat.m[2][0], -viewMat.m[2][1], -viewMat.m[2][2]};
 
         // Spin the cube
+        // 모델 매트릭스, 계속 회전
         float4x4 modelMat = rotateXMat(-0.2f * (float)(M_PI * currentTimeInSeconds)) * rotateYMat(0.1f * (float)(M_PI * currentTimeInSeconds)) ;
         
         // Calculate model-view-projection matrix to send to shader
+        // 모델 뷰 시점
         float4x4 modelViewProj = modelMat * viewMat * perspectiveMat;
 
         // Update constant buffer
         D3D11_MAPPED_SUBRESOURCE mappedSubresource = {};
         d3d11DeviceContext->Map(constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
         Constants* constants = (Constants*)(mappedSubresource.pData);
+
+        // 컨스턴트 모델 뷰 값 변경
         constants->modelViewProj = modelViewProj;
         d3d11DeviceContext->Unmap(constantBuffer, 0);
 

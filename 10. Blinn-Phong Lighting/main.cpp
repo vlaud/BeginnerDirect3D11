@@ -253,6 +253,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
     #endif
 
     // Create Vertex Shader for rendering our lights
+    // 빛 버텍스 셰이더 생성
     ID3DBlob* lightVsCode = nullptr;
     ID3D11VertexShader* lightVertexShader = nullptr;
     {
@@ -275,6 +276,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
     }
 
     // Create Pixel Shader for rendering our lights
+    // 빛 픽셀 셰이더 생성
     ID3D11PixelShader* lightPixelShader = nullptr;
     {
         ID3DBlob* psBlob = nullptr;
@@ -298,6 +300,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
     }
 
     // Create Input Layout for our light vertex shader
+    // 빛 인풋 레이아웃 생성
     ID3D11InputLayout* lightInputLayout = nullptr;
     {
         D3D11_INPUT_ELEMENT_DESC inputElementDesc[] =
@@ -311,6 +314,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
     }
 
     // Create Vertex Shader for rendering our lit objects
+    // 블린 퐁 버텍스 셰이더 생성
     ID3DBlob* blinnPhongVsCode = nullptr;
     ID3D11VertexShader* blinnPhongVertexShader = nullptr;
     {
@@ -333,6 +337,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
     }
 
     // Create Pixel Shader for rendering our lit objects
+    // 블린 퐁 픽셀 셰이더 생성
     ID3D11PixelShader* blinnPhongPixelShader = nullptr;
     {
         ID3DBlob* psBlob = nullptr;
@@ -356,6 +361,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
     }
 
     // Create Input Layout for our Blinn-Phong vertex shader
+    // 블린 퐁 인풋 레이아웃 생성
     ID3D11InputLayout* blinnPhongInputLayout = nullptr;
     {
         D3D11_INPUT_ELEMENT_DESC inputElementDesc[] =
@@ -514,7 +520,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
     struct BlinnPhongPSConstants
     {
         DirectionalLight dirLight;
-        PointLight pointLights[2];
+        PointLight pointLights[2]; // 점광원 2개
     };
 
     ID3D11Buffer* blinnPhongPSConstantBuffer = nullptr;
