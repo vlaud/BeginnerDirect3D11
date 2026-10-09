@@ -94,7 +94,7 @@ float4 ps_main(VS_Output input) : SV_Target
         float3 iAmbient = ambientStrength;
 
         // 난반사 정도 계산
-        float diffuseFactor = max(0.0, dot(input.normalEye, lightDirEye)); // 난반사 정도 = 코사인(cos) 값 = 물체 법선 벡터 x 빛 뱡향 벡터
+        float diffuseFactor = max(0.0, dot(input.normalEye, lightDirEye)); // 난반사 정도 = 코사인(cos) 값 = 법선 벡터와 빛 뱡향 벡터 내적
         float3 iDiffuse = diffuseFactor;
 
         // 정반사 정도 계산
